@@ -4,6 +4,8 @@ import './App.css';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
+import Feed from './Feed.js';
+import Linechart from './Linechart.js';
 
 function App() {
   const [query1, setQuery1] = useState('');
@@ -20,6 +22,8 @@ function App() {
   const [weather1, setWeather1] = useState('');
   const [weatherDesc1, setWeatherDesc1] = useState('');
   const [list1, setList1] = useState('');
+
+  const [renderFlag1, setRenderFlag1] = useState(false);
 
 
   const search1 = evt => {
@@ -46,11 +50,16 @@ function App() {
       .catch(err => {
         console.log(err)
       });
-      fetch(`${access.base}forecast?q=${query1}&cnt=16&appid=${access.key}&units=imperial`)
+      fetch(`${access.base}forecast/daily?q=${query1}&cnt=16&appid=${access.key}&units=imperial`)
       .then(res => res.json())
       .then(result => {
         setQuery1('');
-        console.log('result2', result)
+        setList1(result.list)
+
+
+        setRenderFlag1(true)
+
+
       })
       .catch(err => {
         console.log(err)
@@ -61,6 +70,13 @@ function App() {
   //capitalize first letter
   const capFirst = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+//conditional feed
+  let feed1;
+  if(renderFlag1) {
+    feed1 = <Feed list={list1} /> ;
+    } else {
+      feed1 = <span></span>;
   }
 
   return (
@@ -85,6 +101,9 @@ function App() {
         <div className="weather">{weather1}</div>
         <div className="weather-desc">{capFirst(weatherDesc1)}</div>
       </div>
+
+      <div className="feed1-box">{feed1}</div>
+      <div className="chart1-box"><Linechart list={list1} /></div>
     </div>
   );
 }
