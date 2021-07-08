@@ -15,11 +15,21 @@ code {
 .app {
   background-color: #f1f1;
   min-height: 100vh;
+}
 
+.body-container {
+  padding: 20px 20px 20px 20px;
 }
 
 .title {
   height: 40px;
+}
+
+.hero {
+  background-image: url("img/bg.jpg");
+  height: 400px;
+  object-fit: cover;
+
 }
 
 .search-box {
@@ -40,6 +50,10 @@ code {
 }
 
 .linechart-cont {
-  height: 300px;
-  width: 400px;
+  height: 400px;
+  width: 300px;
+}
+
+.results-container {
+  display: flex;
 }
