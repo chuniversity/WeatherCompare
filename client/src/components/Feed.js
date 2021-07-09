@@ -2,7 +2,6 @@ import React from 'react';
 import Moment from 'react-moment';
 
 function Feed({list}) {
-  console.log(list)
   return (
     <div className="thefeed">
       {list.map((item, index) => (

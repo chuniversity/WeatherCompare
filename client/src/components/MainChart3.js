@@ -3,7 +3,6 @@ import { Line } from 'react-chartjs-2';
 
 
 function MainChart({list1, list2, list3, city1, city2, city3}) {
-  console.log('thelist3', list3)
   let dates = [];
   let temps1 = [];
   let temps2 = [];

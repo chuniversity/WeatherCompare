@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Moment from 'react-moment';
+
 import access from './config.js';
 import './App.css';
-import Moment from 'react-moment';
 import 'moment-timezone';
 import logo from './img/logo.png'
 
@@ -9,9 +11,16 @@ import Feed from './components/Feed.js';
 import Linechart from './components/Linechart.js';
 import MainChart from './components/MainChart.js';
 import MainChart3 from './components/MainChart3.js';
+import Queries from './components/Queries.js';
+
 
 
 function App() {
+  // query states
+   const [data, setData] = useState([]);
+   const [buttonSbm, setButtonSbm] = useState(false);
+
+
   // first item
   const [query1, setQuery1] = useState('');
   const [date1, setDate1] = useState('');
@@ -59,6 +68,34 @@ function App() {
 
 
 
+  useEffect(() => {
+    axios.get('http://127.0.0.1:4000/api/queries')
+        .then(res => {
+          setData(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}, []);
+
+  const postQuery = e => {
+    e.preventDefault();
+    const object = {
+      city1 : city1,
+      city2 : city2,
+      city3 : city3
+    }
+    axios.post('/api/queries/', object)
+    .then((data) => {
+      console.log('post', data)
+      setButtonSbm(true)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+  }
+
   const search1 = evt => {
     if (evt.key === "Enter") {
       fetch(`${access.base}weather?q=${query1}&appid=${access.key}&units=imperial`)
@@ -84,11 +121,7 @@ function App() {
           .then(result => {
             setQuery1('');
             setList1(result.list)
-
-
             setRenderFlag1(true)
-
-
           })
         }
       })
@@ -172,6 +205,96 @@ function App() {
     }
   }
 
+  const searchAll = () => {
+    // first fetch2
+    console.log('thequeries', query1, query2, query3)
+    fetch(`${access.base}weather?q=${query1}&appid=${access.key}&units=imperial`)
+    .then(res => res.json())
+    .then(result => {
+      if(!result.name) {
+        console.log('error')
+      } else {
+        setDate1(<Moment format="ddd, MMM Do YYYY"></Moment>)
+        setCity1(result.name);
+        setCountry1(result.sys.country);
+        setLocation1(`${result.name}, ${result.sys.country}`)
+        setTemp1(`${Math.round(result.main.temp)} ${'\u00b0'}`);
+        setMin1(result.main.temp_min);
+        setMax1(result.main.temp_max);
+        setWind1(result.wind.speed);
+        setWeather1(result.weather[0].main);
+        setWeatherDesc1(result.weather[0].description);
+
+        // first fetch 2
+        fetch(`${access.base}forecast/daily?q=${query1}&cnt=16&appid=${access.key}&units=imperial`)
+        .then(res => res.json())
+        .then(result => {
+          setQuery1('');
+          setList1(result.list)
+          setRenderFlag1(true)
+
+          //second fetch
+          fetch(`${access.base}weather?q=${query2}&appid=${access.key}&units=imperial`)
+          .then(res => res.json())
+          .then(result => {
+            if(!result.name) {
+              console.log('error')
+            } else {
+              setDate2(<Moment format="ddd, MMM Do YYYY"></Moment>)
+              setCity2(result.name);
+              setCountry2(result.sys.country);
+              setLocation2(`${result.name}, ${result.sys.country}`)
+              setTemp2(`${Math.round(result.main.temp)} ${'\u00b0'}`);
+              setMin2(result.main.temp_min);
+              setMax2(result.main.temp_max);
+              setWind2(result.wind.speed);
+              setWeather2(result.weather[0].main);
+              setWeatherDesc2(result.weather[0].description);
+
+              // second fetch 2
+              fetch(`${access.base}forecast/daily?q=${query2}&cnt=16&appid=${access.key}&units=imperial`)
+              .then(res => res.json())
+              .then(result => {
+                setQuery2('');
+                setList2(result.list)
+                setRenderFlag2(true)
+                fetch(`${access.base}weather?q=${query3}&appid=${access.key}&units=imperial`)
+      .then(res => res.json())
+      .then(result => {
+        if(!result.name) {
+          console.log('error')
+        } else {
+          setDate3(<Moment format="ddd, MMM Do YYYY"></Moment>)
+          setCity3(result.name);
+          setCountry3(result.sys.country);
+          setLocation3(`${result.name}, ${result.sys.country}`)
+          setTemp3(`${Math.round(result.main.temp)} ${'\u00b0'}`);
+          setMin3(result.main.temp_min);
+          setMax3(result.main.temp_max);
+          setWind3(result.wind.speed);
+          setWeather3(result.weather[0].main);
+          setWeatherDesc3(result.weather[0].description);
+
+          // second fetch
+          fetch(`${access.base}forecast/daily?q=${query3}&cnt=16&appid=${access.key}&units=imperial`)
+          .then(res => res.json())
+          .then(result => {
+            setQuery3('');
+            setList3(result.list)
+            setRenderFlag3(true)
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      });
+              })
+            }
+          })
+        })
+      }
+    })
+  }
 
 
   //capitalize first letter
@@ -186,11 +309,16 @@ function App() {
   let feed3 = <span></span>;
   let line3 = <span></span>;
   let mainchart = <span></span>;
+  let herobutton = <span></span>;
+  let prevQueries = <span></span>;
+  let title = <h2>Enter a city to compare:</h2>;
+  let title2 = <span></span>;
   let searchbox = <input type="text" className="search-bar" placeholder="Search..." onChange={e => setQuery1(e.target.value)} value={query1} onKeyPress={search1} />
   if(renderFlag1) {
     feed1 = <Feed list={list1} /> ;
     line1 = <Linechart list={list1} />;
     searchbox = <input type="text" className="search-bar" placeholder="Search..." onChange={e => setQuery2(e.target.value)} value={query2} onKeyPress={search2} />
+    title = <h1>Enter another city to compare against {city1}:</h1>;
     } else {
   }
 
@@ -199,7 +327,7 @@ function App() {
     line2 = <Linechart list={list2} />;
     searchbox = <input type="text" className="search-bar" placeholder="Search..." onChange={e => setQuery3(e.target.value)} value={query3} onKeyPress={search3} />
     mainchart = <MainChart list1={list1} list2={list2} city1={city1} city2={city2} list3={list3} />
-  } else {
+    title = <h1>Enter another city to compare against {city1} and {city2}:</h1>;
   }
 
   if(renderFlag3) {
@@ -207,15 +335,31 @@ function App() {
     line3 = <Linechart list={list3} />;
     searchbox = <span></span>
     mainchart = <MainChart3 list1={list1} list2={list2} city1={city1} city2={city2} list3={list3} city3={city3} />
-  } else {
+    prevQueries = <Queries data={data} searchAll={searchAll}/>;
+    title = <span></span>
+    title2 = <h1>{city1} vs {city2} vs {city3}</h1>;
+      if(!buttonSbm) {
+        herobutton = <form onSubmit={postQuery}><button type="submit">Save Dashboard</button></form>
+     } else {
+      herobutton = <span>You saved this dashboard!</span>
+     }
   }
+
+
 
   return (
     <div className="app">
       <div className="hero">
         <div className="logo"><img src={logo} alt="logo" width="300px"/></div>
+        <div className="hero-title">{title}</div>
+        <div className="hero-title-2-cont">
+        <div className="hero-title-2">{title2}</div>
+          </div>
         <div className="searchContainer">{searchbox}</div>
-        </div>
+      </div>
+      <div className="button-row">
+          <div className="herobutton">{herobutton}</div>
+      </div>
       <div className="body-container">
         <div className="results-container">
           {/* result 1 */}
@@ -271,11 +415,17 @@ function App() {
             </div>
           {/* end columns */}
           </div>
-          <div className="main-chart-cont">
-              {mainchart}
+          <div className="main-chart-cont">{mainchart}</div>
+
+          {/* prev queries */}
+          <div className="prev-queries">
+            {data.map((item, index) => (
+              <>
+              <a href="#" key={index} onClick={() => { setQuery1(city1); setQuery2(city2); setQuery3(city3); searchAll()}}>{item.city1} : {item.city2} : {item.city3}</a> <span key={index + 1000} className="spacer"></span>
+              </>
+            ))}
 
           </div>
-
 
       </div>
     </div>
