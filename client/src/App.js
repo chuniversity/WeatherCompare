@@ -205,97 +205,18 @@ function App() {
     }
   }
 
-  const searchAll = () => {
-    // first fetch2
-    console.log('thequeries', query1, query2, query3)
-    fetch(`${access.base}weather?q=${query1}&appid=${access.key}&units=imperial`)
-    .then(res => res.json())
-    .then(result => {
-      if(!result.name) {
-        console.log('error')
-      } else {
-        setDate1(<Moment format="ddd, MMM Do YYYY"></Moment>)
-        setCity1(result.name);
-        setCountry1(result.sys.country);
-        setLocation1(`${result.name}, ${result.sys.country}`)
-        setTemp1(`${Math.round(result.main.temp)} ${'\u00b0'}`);
-        setMin1(result.main.temp_min);
-        setMax1(result.main.temp_max);
-        setWind1(result.wind.speed);
-        setWeather1(result.weather[0].main);
-        setWeatherDesc1(result.weather[0].description);
+  const searchAll = (city1, city2, city3) => {
+    console.log(city1, city2, city3)
+    setQuery1(city1);
+    setQuery2(city2)
+    setQuery3(city3)
 
-        // first fetch 2
-        fetch(`${access.base}forecast/daily?q=${query1}&cnt=16&appid=${access.key}&units=imperial`)
-        .then(res => res.json())
-        .then(result => {
-          setQuery1('');
-          setList1(result.list)
-          setRenderFlag1(true)
-
-          //second fetch
-          fetch(`${access.base}weather?q=${query2}&appid=${access.key}&units=imperial`)
-          .then(res => res.json())
-          .then(result => {
-            if(!result.name) {
-              console.log('error')
-            } else {
-              setDate2(<Moment format="ddd, MMM Do YYYY"></Moment>)
-              setCity2(result.name);
-              setCountry2(result.sys.country);
-              setLocation2(`${result.name}, ${result.sys.country}`)
-              setTemp2(`${Math.round(result.main.temp)} ${'\u00b0'}`);
-              setMin2(result.main.temp_min);
-              setMax2(result.main.temp_max);
-              setWind2(result.wind.speed);
-              setWeather2(result.weather[0].main);
-              setWeatherDesc2(result.weather[0].description);
-
-              // second fetch 2
-              fetch(`${access.base}forecast/daily?q=${query2}&cnt=16&appid=${access.key}&units=imperial`)
-              .then(res => res.json())
-              .then(result => {
-                setQuery2('');
-                setList2(result.list)
-                setRenderFlag2(true)
-                fetch(`${access.base}weather?q=${query3}&appid=${access.key}&units=imperial`)
-      .then(res => res.json())
-      .then(result => {
-        if(!result.name) {
-          console.log('error')
-        } else {
-          setDate3(<Moment format="ddd, MMM Do YYYY"></Moment>)
-          setCity3(result.name);
-          setCountry3(result.sys.country);
-          setLocation3(`${result.name}, ${result.sys.country}`)
-          setTemp3(`${Math.round(result.main.temp)} ${'\u00b0'}`);
-          setMin3(result.main.temp_min);
-          setMax3(result.main.temp_max);
-          setWind3(result.wind.speed);
-          setWeather3(result.weather[0].main);
-          setWeatherDesc3(result.weather[0].description);
-
-          // second fetch
-          fetch(`${access.base}forecast/daily?q=${query3}&cnt=16&appid=${access.key}&units=imperial`)
-          .then(res => res.json())
-          .then(result => {
-            setQuery3('');
-            setList3(result.list)
-            setRenderFlag3(true)
-          })
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      });
-              })
-            }
-          })
-        })
-      }
-    })
+    let obj = {};
+    obj.key = "Enter";
+    search1(obj);
+    search2(obj);
+    search3(obj);
   }
-
 
   //capitalize first letter
   const capFirst = (string) => {
@@ -419,11 +340,7 @@ function App() {
 
           {/* prev queries */}
           <div className="prev-queries">
-            {data.map((item, index) => (
-              <>
-              <a href="#" key={index} onClick={() => { setQuery1(city1); setQuery2(city2); setQuery3(city3); searchAll()}}>{item.city1} : {item.city2} : {item.city3}</a> <span key={index + 1000} className="spacer"></span>
-              </>
-            ))}
+           <Queries data={data} searchAll={searchAll}/>
 
           </div>
 
