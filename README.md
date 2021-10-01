@@ -12,4 +12,4 @@ cd into the repository
 run: `npm run start`
 
 open a new terminal, cd into /client
-run 'npm run start`
+run `npm run start`
