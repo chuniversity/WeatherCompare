@@ -8,8 +8,8 @@ Clone the repo
 ```
 git clone https://github.com/chuniversity/WeatherCompare.git
 ```
-cd into the repository
+cd into the repository <br />
 run: `npm run start`
 
-open a new terminal, cd into /client
+open a new terminal, cd into /client  <br />
 run `npm run start`
